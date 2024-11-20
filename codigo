@@ -1,0 +1,129 @@
+#include <ThingSpeak.h>
+#include <OneWire.h> // temperatura
+#include <DallasTemperature.h> // temperatura
+#include <TinyGPS++.h>// GPS
+#include <PulseSensorPlayground.h> // pulsómetro
+/Configuracion del sensor de temperatura/
+const int oneWireBus = 4;
+OneWire oneWire(oneWireBus);
+DallasTemperature sensors(&oneWire);
+/configuración del modulo de gps/
+#define RXD2 16
+#define TXD2 17
+#define GPS_BAUD 9600
+TinyGPSPlus gps;
+HardwareSerial gpsSerial(2);
+float latitud;
+float longitud;
+/configuración del pulsometro/
+#define USE_ARDUINO_INTERRUPTS true
+const int PulseWire = 36; 
+const int LED13 = 2; 
+int Umbral = 1950;
+PulseSensorPlayground pulseSensor;
+
+
+/Definimos como constantes Char las credenciales de acceso a la red WiFi/
+const char* ssid="pobre";
+const char* password="12345678";
+/Definimos las credenciales para la conexión a la plataforma/
+unsigned long channelID = 2672850;
+const char* WriteAPIKey ="WA4P2KAY0AYFCOE2";
+/Definimos el cliente WiFi que usaremos/
+WiFiClient cliente;
+
+/Iniciamos la función Setup()/
+void setup() {
+  /Iniciamos el terminal Serial a una velocidad de 115200, junto a un retardo de 1 segundo/
+  Serial.begin(115200);
+  delay(1000);
+  /Imprimimos una frase, e iniciamos nuestro sensor temperatura/
+  Serial.println("Sensores Instalados y listos");
+  sensors.begin(); 
+  /GPS/
+  gpsSerial.begin(GPS_BAUD, SERIAL_8N1, RXD2, TXD2);
+
+  pulseSensor.analogInput(PulseWire);   
+  pulseSensor.blinkOnPulse(LED13);
+  pulseSensor.setThreshold(Umbral);   
+
+  if (pulseSensor.begin()) {
+    Serial.println("PulseSensor initialized!");
+  }
+  
+  /Iniciamos la conexión a la red WiFi, y se imprimirán caracteres indicando el tiempo que tarda la conexión/
+  WiFi.begin(ssid,password);
+  while(WiFi.status() != WL_CONNECTED){
+    delay(500);
+    Serial.print(".");
+  }
+  /Una vez conextado, se imprimirá una frase y se iniciará la conexión a la Plataforma usando el cliente definido anteriormente/
+  Serial.println("Conectado al WiFi");
+  ThingSpeak.begin(cliente);
+  delay(5000);
+}
+
+/Iniciamos la función Loop/
+void loop() {
+
+
+  int bpm = pulseSensor.getBeatsPerMinute();
+  if (pulseSensor.sawStartOfBeat()) {
+    Serial.println("♥ ¡Ocurrió un latido! ");
+    Serial.print(bpm);
+  }
+    ThingSpeak.setField(2,bpm);
+  /Usamos un retardo de 5 segundos, y utilizamos la función Medición para la lectura de los sensores/
+  delay(5000);
+  medicion();
+  /Hacemos la conexión y envío de datos a la plataforma, utilizando las credenciales definidas anteriormente/
+  ThingSpeak.writeFields(channelID,WriteAPIKey);
+  /Imprimimos una frase indicando el envío, y agregamos un retardo de 10 segundos/
+  Serial.println("Datos enviados a ThingSpeak!");
+  delay(10000);
+
+    
+  
+}
+/Definimos la función Medición/
+void medicion(){
+  unsigned long start = millis();
+    while (millis() - start < 1000) {
+    while (gpsSerial.available() > 0) {
+      gps.encode(gpsSerial.read());
+    }
+
+    // Verificar si los datos del GPS son válidos y están actualizados
+    if (gps.location.isUpdated() && gps.location.isValid()) {
+      latitud = gps.location.lat();
+      longitud = gps.location.lng();
+    }
+    
+  }
+
+  // Obtener datos del pulsómetro
+  
+ 
+  /Realizamos la lectura de Temperatura y Humedad del sensor/
+  sensors.requestTemperatures();
+  float temperatura = sensors.getTempCByIndex(0);
+  /Imprimimos los valores obtenidos en el terminal Serial/
+  Serial.print("Temperatura registrada: ");
+  Serial.print(temperatura);
+  Serial.println("°C");
+  Serial.print("latitud: ");
+  Serial.print(latitud);
+
+  Serial.print("longitud: ");
+  Serial.print(longitud);
+
+  Serial.println("-----------------------------------------");
+
+
+  /Indicamos el orden de envío por campos o Field, en el orden definido de la plataforma, junto a los valores del sensor/
+  ThingSpeak.setField(1,temperatura);
+  ThingSpeak.setField(3,latitud);
+  ThingSpeak.setField(4,longitud);
+  
+
+}
