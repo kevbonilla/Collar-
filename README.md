@@ -11,8 +11,6 @@ El **Collar Inteligente para Mascotas** es un dispositivo IoT diseñado para mej
 
 **Estado del proyecto:** En desarrollo (prototipo funcional en pruebas).
 
-### Screenshot
-![Collar Inteligente](https://www.united-internet.de/fileadmin/user_upload/Brands/Downloads/Logo_IONOS_by.jpg)
 
 ---
 
