@@ -74,3 +74,12 @@ El collar intentará reconectarse automáticamente. Si esto no sucede, revisa la
 
 **5. ¿Puedo agregar más sensores?**  
 Sí, el ESP32 tiene capacidad para integrar sensores adicionales. Sin embargo, debes asegurarte de no exceder los límites de corriente o memoria del microcontrolador.  
+
+---
+##PCB
+
+git add descargas/pcb.jpg
+git commit -m "Added PCB  image"
+git push
+
+![PCB Design](descargas/pcb.jpg)
