@@ -1,5 +1,0 @@
-git add descargas/pcb.jpg
-git commit -m "Added PCB  image"
-git push
-
-![PCB Design](descargas/pcb.jpg)
