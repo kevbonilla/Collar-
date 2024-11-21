@@ -78,8 +78,8 @@ Sí, el ESP32 tiene capacidad para integrar sensores adicionales. Sin embargo, d
 ---
 ##PCB
 
-git add descargas/pcb.jpg
-git commit -m "Added PCB  image"
-git push
+Este diseño de PCB (placa de circuito impreso) forma parte del Collar Inteligente para Mascotas y ha sido desarrollado específicamente para integrar todos los componentes esenciales del proyecto. La PCB está diseñada para conectar de manera eficiente el microcontrolador ESP32 con el sensor de temperatura DS18B20, el módulo GPS NEO-6M y el pulsómetro. Su diseño compacto y organizado garantiza una disposición óptima de las pistas, minimizando interferencias y mejorando la estabilidad eléctrica del sistema.
 
-![PCB Design](descargas/pcb.jpg)
+Además, se incluye un detalle decorativo con la fórmula "E=mc²", que representa el compromiso del proyecto no solo con la funcionalidad, sino también con el diseño estético. Esta PCB es clave para asegurar la conectividad entre los componentes, soportando las operaciones de monitoreo en tiempo real de la salud y la ubicación de la mascota. La implementación de este diseño en el collar garantiza eficiencia energética, robustez y facilidad de montaje.
+
+La imagen la pueden en contrar en el archivo pcb.jpg
